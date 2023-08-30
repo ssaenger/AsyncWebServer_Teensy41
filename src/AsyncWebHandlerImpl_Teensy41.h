@@ -64,6 +64,7 @@ class AsyncStaticWebHandler: public AsyncWebHandler
     AsyncStaticWebHandler(const char* uri, const char* path, const char* cache_control);
     virtual bool canHandle(AsyncWebServerRequest *request) override final;
     virtual void handleRequest(AsyncWebServerRequest *request) override final;
+    virtual void handleUpload(AsyncWebServerRequest *request, const String& filename, size_t index, uint8_t *data, size_t len, bool final) override final;
     AsyncStaticWebHandler& setIsDir(bool isDir);
     AsyncStaticWebHandler& setCacheControl(const char* cache_control);
     AsyncStaticWebHandler& setLastModified(const char* last_modified);
@@ -189,6 +190,14 @@ class AsyncCallbackWebHandler: public AsyncWebHandler
         _onRequest(request);
       else
         request->send(500);
+    }
+
+/////////////////////////////////////////////////
+
+    virtual void handleUpload(AsyncWebServerRequest *request, const String& filename, size_t index, uint8_t *data, size_t len, bool final) override final
+    {
+      if (_onUpload)
+        _onUpload(request, filename, index, data, len, final);
     }
 
     /////////////////////////////////////////////////
